@@ -13,6 +13,36 @@ class Player:
             self.x = 4
             self.y = 8
 
+    def move(self, x, y, board):
+    	""" Try to move pawn to (x,y). Update the board if successful. Raise exception otherwise. """
+
+        if self.legal_move(x, y, board):
+            self.x = x
+            self.y = y
+            if (self.player_num == 1):
+            	board.players[0] = self
+            else:
+            	board.players[1] = self
+        else:
+            raise ("Illegal move")
+            
+    def place_wall(self, tile, board, orientation):
+    	"""place_wall(tile, board, orientation) places a wall where tile is the top_left tile """
+        x = tile.x
+        y = tile.y
+        # Create remaining three tiles for wall object
+        top_l = tile
+        top_r = Tile(x+1, y)
+        bot_l = Tile(x, y-1)
+        bot_r = Tile(x-1, y-1)
+        wall = Wall(top_l, top_r, bot_l, bot_r, orientation)
+
+        if self.legal_placement(tile, board, wall):
+            self.walls -= 1
+            board.walls.append(wall)
+        else:
+            raise ("Illegal wall placement")
+            
     def legal_move(self, x, y, board):
     	""" Return True if move to (x,y) is a legal move and False otherwise. """
 
@@ -84,19 +114,6 @@ class Player:
     		return True
     	return False
 
-    def move(self, x, y, board):
-    	""" Try to move pawn to (x,y). Update the board if successful. Raise exception otherwise. """
-
-        if self.legal_move(x, y, board):
-            self.x = x
-            self.y = y
-            if (self.player_num == 1):
-            	board.players[0] = self
-            else:
-            	board.players[1] = self
-        else:
-            raise ("Illegal move")
-
     def legal_placement(self, tile, board, wall):
     	""" Return True if it is legal to place [wall] at location [tile] and False otherwise.
     		[tile] is the upper left tile touching the wall. """
@@ -141,23 +158,6 @@ class Player:
                 p2_path = True
 
         return (p1_path and p2_path)
-
-    def place_wall(self, tile, board, orientation):
-    	"""place_wall(tile, board, orientation) places a wall where tile is the top_left tile """
-        x = tile.x
-        y = tile.y
-        # Create remaining three tiles for wall object
-        top_l = tile
-        top_r = Tile(x+1, y)
-        bot_l = Tile(x, y-1)
-        bot_r = Tile(x-1, y-1)
-        wall = Wall(top_l, top_r, bot_l, bot_r, orientation)
-
-        if self.legal_placement(tile, board, wall):
-            self.walls -= 1
-            board.walls.append(wall)
-        else:
-            raise ("Illegal wall placement")
 
     def print_player(self):
     	""" Display information about the player. """
