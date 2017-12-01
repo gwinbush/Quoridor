@@ -6,6 +6,7 @@ class Player(object):
     def __init__(self, player_num):
         self.walls = 10
         self.player_num = player_num
+        self.winning_position = False
 
         if (player_num == 0):
             self.x = 4
@@ -20,6 +21,10 @@ class Player(object):
         if self.legal_move(x, y, board):
             self.x = x
             self.y = y
+            if self.player_num == 0 and self.y == 8:
+                self.winning_position = True
+            elif self.player_num == 1 and self.y == 0:
+                self.winning_position = True
         else:
             raise ("Illegal move")
     

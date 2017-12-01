@@ -208,6 +208,8 @@ class Board():
 			if self.move == 'movePawn':
 				if self.state.players[self.turn].legal_move(i,j,self.state):
 					self.state.players[self.turn].move(i,j,self.state)
+					if self.state.players[self.turn].winning_position:
+						print "Player" + str(self.turn) + "wins!\n"
 					self.refresh()
 					self.nextTurn()
 					#time.sleep(.3)
