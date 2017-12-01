@@ -2,6 +2,77 @@ from Queue import *
 import state
 from sys import maxint
 
+def aStarLength(start, end, state):
+	path = aStar(start, end, state)
+	return len(path)
+
+def pathExists(start, end, state):
+	path = aStar(start, end state)
+	if path == []:
+		return False
+	return True
+
+def aStar(start, end, state):
+	visited = set()
+	frontier = list()
+	frontier.append(start)
+	cameFrom = {}
+	
+	gScore = {}
+	for i in range(0,9):
+		for j in range(0,9):
+			gScore[(i,j)] = maxint
+	gScore[start] = 0
+
+	fScore = {}
+	fScore = {}
+	for i in range(0,9):
+		for j in range(0,9):
+			fScore[(i,j)] = maxint
+
+	fScore[start] = heuristic(start, end)
+
+	while len(frontier) != 0:
+		current = smallest(frontier, fScore)
+		if current == end:
+			return make_path(cameFrom, current)
+		
+		frontier.remove(current)
+		visited.add(current)
+
+		children = get_successors(current)
+		for child in children:
+			if not (child in visited):
+				if not blocked(child[0], child[1], current[0], current[1], state):
+					frontier.append(child)
+
+			tent_gScore = gScore[current] + 1
+			if tent_gScore >= gScore[child]:
+				continue
+
+			cameFrom[child] = current
+			gScore[child] = tent_gScore
+			fScore[child] = gScore[child] + heuristic(child, end)
+	return []
+
+def make_path(cameFrom, current):
+	tot_path = [current]
+	while current in cameFrom.keys():
+		current = cameFrom[current]
+		tot_path.append(current)
+	return tot_path
+
+		
+def smallest(frontier, fScore):
+	smallest = frontier[0]
+	for node in frontier:
+		if fScore[node] < fScore[smallest]:
+			smallest = node
+	return smallest
+
+def heuristic(start, end):
+	return abs(start[1]-end[1])
+
 
 def bfs(start, end, board):
 	"""
