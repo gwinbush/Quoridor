@@ -205,6 +205,7 @@ class Board():
 			i, j = coordsToGrid(x,y)
 			if i == None or j == None:
 				return 
+			
 			if self.move == 'movePawn':
 				if self.state.players[self.turn].legal_move(i,j,self.state):
 					self.state.players[self.turn].move(i,j,self.state)
@@ -221,7 +222,7 @@ class Board():
 					self.refresh()
 					self.nextTurn()
 					#time.sleep(.3)
-
+			# time.sleep(.3)
 			if self.turn == 1 and self.ai:
 				self.state.players[self.turn].finalMove(self.state)
 				self.refresh()

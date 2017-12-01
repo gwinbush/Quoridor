@@ -1,5 +1,6 @@
 from Queue import *
 import state
+from sys import maxint
 
 
 def bfs(start, end, board):
@@ -41,6 +42,29 @@ def bfs(start, end, board):
 					frontier.put(child)
 					visited.add(child)
 	return False
+
+def path(start, end, board):
+	
+	frontier = Queue()
+	visited = set()
+	frontier.put(start)
+	visited.add(start)
+	distance = {}
+	distance[start] = 0
+	while not frontier.empty():
+		parent = frontier.get()
+		if (parent == end):
+			return distance[end]
+		
+		children = get_successors(parent)
+		for child in children:
+			if not (child in visited):
+				if not blocked(child[0], child[1], parent[0], parent[1], board):
+					frontier.put(child)
+					distance[child] = distance[parent] + 1
+					visited.add(child)
+	
+	return maxint
 
 def get_successors(parent):
 	""" Return the tiles adjacent to [parent] """

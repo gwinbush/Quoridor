@@ -213,7 +213,7 @@ class State:
     def __init__(self, ai=False):
         import ai
         if ai:
-            self.players =[Player(0), ai.Baseline(1)]
+            self.players =[Player(0), ai.Roger(1)]
         else:
             self.players = [Player(0), Player(1)]
         self.walls = []
