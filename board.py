@@ -209,7 +209,7 @@ class Board():
 				self.refresh()
 				self.nextTurn()
 
-				time.sleep(1)
+				time.sleep(.1)
 
 		else:			
 			i, j = coordsToGrid(x,y)
@@ -236,6 +236,7 @@ class Board():
 				self.state.players[self.turn].finalMove(self.state)
 				self.refresh()
 				self.nextTurn()
+				time.sleep(.1)
 
 
 	def refresh(self):

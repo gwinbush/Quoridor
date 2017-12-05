@@ -75,34 +75,13 @@ def heuristic(start, end):
 
 
 def bfs(start, end, board):
-	"""
-    Breadth-first search function for tiles in game.
 
-    Parameters
-    ----------
-    start : (int,int)
-        starting location for search
-    end : (int,int)
-		ending location for search
-	board : Board
-		The game board that contains the start and end tiles for BFS 
-    Returns
-    -------
-    bool
-        True -- If a path exists from start to end. A path exists if the there is
-        series of valid moves beginning at [start] and ending at [end]. A move
-        is valid if it is not blocked by a wall and is a move to an adjacent
-        tile or a valid jump 
-        
-        False -- Otherwise
-
-    """
-	frontier = Queue()
+	frontier = []
 	visited = set()
-	frontier.put(start)
+	frontier.append(start)
 	visited.add(start)
-	while not frontier.empty():
-		parent = frontier.get()
+	while frontier != []:
+		parent = frontier.pop(0)
 		if (parent == end):
 			return True
 		
@@ -110,20 +89,20 @@ def bfs(start, end, board):
 		for child in children:
 			if not (child in visited):
 				if not blocked(child[0], child[1], parent[0], parent[1], board):
-					frontier.put(child)
+					frontier.append(child)
 					visited.add(child)
 	return False
 
 def path(start, end, board):
 	
-	frontier = Queue()
+	frontier = []
 	visited = set()
-	frontier.put(start)
+	frontier.append(start)
 	visited.add(start)
 	distance = {}
 	distance[start] = 0
-	while not frontier.empty():
-		parent = frontier.get()
+	while frontier != []:
+		parent = frontier.pop(0)
 		if (parent == end):
 			return distance[end]
 		
@@ -131,10 +110,10 @@ def path(start, end, board):
 		for child in children:
 			if not (child in visited):
 				if not blocked(child[0], child[1], parent[0], parent[1], board):
-					frontier.put(child)
+					frontier.append(child)
 					distance[child] = distance[parent] + 1
 					visited.add(child)
-	
+
 	return maxint
 
 def get_successors(parent):
