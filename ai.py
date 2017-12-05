@@ -73,11 +73,18 @@ class Roger(Player):
 					bot_r = Tile(i+1,j+1)
 					wall = Wall(top_l, top_r, bot_l, bot_r, k)
 					self.wall_options.append(wall)
+		if self.player_num == 1:
+			self.win_row = [(0,0),(1,0),(2,0),(3,0),(4,0),(5,0),(6,0),(7,0),(8,0)]
+			self.opp_row = [(0,8),(1,8),(2,8),(3,8),(4,8),(5,8),(6,8),(7,8),(8,8)]
+		else:
+			self.opp_row = [(0,0),(1,0),(2,0),(3,0),(4,0),(5,0),(6,0),(7,0),(8,0)]
+			self.win_row = [(0,8),(1,8),(2,8),(3,8),(4,8),(5,8),(6,8),(7,8),(8,8)]
+
 
 	def finalMove(self, state):
 		min_diff = maxint
 
-		opp_row = [(0,8),(1,8),(2,8),(3,8),(4,8),(5,8),(6,8),(7,8),(8,8)]
+		opp_row = self.opp_row
 		opp = state.players[0]
 		minOppPath = minPathLen(opp.x, opp.y, opp_row, state)
 
@@ -85,7 +92,7 @@ class Roger(Player):
 		minMove = None
 		moves = self.possibleMoves(state)
 
-		win_row = [(0,0),(1,0),(2,0),(3,0),(4,0),(5,0),(6,0),(7,0),(8,0)]
+		win_row = self.win_row
 		for m in moves:
 			minMovePath = minPathLen(m.x, m.y, win_row, state)
 			if minMovePath < minPath:

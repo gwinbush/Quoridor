@@ -45,13 +45,13 @@ class Board():
 		self.turn = 0
 		self.state = None
 		self.photos = [None, None]
-		self.ai = False
+		self.ai_count = '0'
 		for _ in range(NUM_COLUMNS):
 			self.tiles.append(range(NUM_ROWS))
 
 
 
-	def newGame(self, ai):
+	def newGame(self, ai_count):
 		if self.root:
 			self.root.destroy()
 
@@ -72,9 +72,10 @@ class Board():
 		self.drawTiles()
 		self.generateWalls()
 
-		self.state = State(ai)
-		self.ai = ai
-		self.turn = random.randint(0,1)
+		self.state = State(ai_count)
+		self.ai_count = ai_count
+		# self.turn = random.randint(0,1)
+		self.turn = 0
 		self.drawPlayers()
 		
 		self.root.mainloop()
@@ -181,7 +182,7 @@ class Board():
 		self.root.destroy()
 
 	def handleMotion(self, x, y):
-		if self.turn == 1 and self.ai:
+		if self.ai_count == '2' or (self.turn == 1 and self.ai_count == '1'):
 				return
 
 		self.clearWallShadow()
@@ -202,6 +203,15 @@ class Board():
 			self.drawWalls(legal)
 
 	def handleClick(self, x, y):
+		if (self.ai_count == '2'):
+			while not self.state.players[0].winning_position and not self.state.players[1].winning_position:
+				self.state.players[self.turn].finalMove(self.state)
+				self.refresh()
+				self.nextTurn()
+
+				time.sleep(1)
+
+		else:			
 			i, j = coordsToGrid(x,y)
 			if i == None or j == None:
 				return 
@@ -213,7 +223,7 @@ class Board():
 						print "Player" + str(self.turn) + "wins!\n"
 					self.refresh()
 					self.nextTurn()
-					#time.sleep(.3)
+
 			if self.move == 'placeWall':
 				wall_string = coordsToWallStr(i, j, x, y)
 				if self.state.players[self.turn].legal_placement(self.state, wallStrToState(wall_string)):
@@ -221,19 +231,19 @@ class Board():
 					self.state.players[self.turn].place_wall(self.state, wallStrToState(wall_string))
 					self.refresh()
 					self.nextTurn()
-					#time.sleep(.3)
-			# time.sleep(.3)
-			if self.turn == 1 and self.ai:
+
+			if self.turn == 1 and self.ai_count == '1':
 				self.state.players[self.turn].finalMove(self.state)
 				self.refresh()
 				self.nextTurn()
-				#time.sleep(.1)
+
 
 	def refresh(self):
 		self.clearShadow()
 		self.drawWalls()
 		self.drawWallCount()
 		self.drawPlayers()
+		self.root.update()
 
 	def nextTurn(self):
 		if self.turn == 0:
@@ -342,6 +352,9 @@ def wallStateToStr(wall):
 if __name__ == '__main__':
 	board = Board()
 	if len(argv) == 2:
-		if argv[1] == 'ai':
-			board.newGame(True)
-	board.newGame(False)
+		if argv[1] == '1':
+			board.newGame('1')
+		elif argv[1] == '2':
+			board.newGame('2')
+	else:
+		board.newGame('0')

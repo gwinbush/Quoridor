@@ -7,7 +7,7 @@ def aStarLength(start, end, state):
 	return len(path)
 
 def pathExists(start, end, state):
-	path = aStar(start, end state)
+	path = aStar(start, end, state)
 	if path == []:
 		return False
 	return True
