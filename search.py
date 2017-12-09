@@ -1,4 +1,3 @@
-from Queue import *
 import state
 from sys import maxint
 
@@ -75,7 +74,28 @@ def heuristic(start, end):
 
 
 def bfs(start, end, board):
+	"""
+    Breadth-first search function for tiles in game.
 
+    Parameters
+    ----------
+    start : (int,int)
+        starting location for search
+    end : (int,int)
+		ending location for search
+	board : Board
+		The game board that contains the start and end tiles for BFS 
+    Returns
+    -------
+    bool
+        True -- If a path exists from start to end. A path exists if the there is
+        series of valid moves beginning at [start] and ending at [end]. A move
+        is valid if it is not blocked by a wall and is a move to an adjacent
+        tile or a valid jump 
+        
+        False -- Otherwise
+
+    """
 	frontier = []
 	visited = set()
 	frontier.append(start)
