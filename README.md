@@ -15,4 +15,3 @@ We implement the Quoridor strategy game and a few different artificial intellige
 		* `python board.py 1`
 	3. To have the two bots play eachother:
 		* run `python board.py 2`
-
