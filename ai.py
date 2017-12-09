@@ -5,6 +5,8 @@ import copy
 from sys import maxint
 minint = -maxint -1
 
+# Baseline AI finds all possible and randomly selects one
+# We give it a higher probability of moving the pawn rather than placing a wall
 class Baseline(Player):
 	def __init__(self, num):
 		super(Baseline, self).__init__(num)

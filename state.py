@@ -1,5 +1,6 @@
 from search import *
 import copy 
+import random
 
 class Player(object):
 
@@ -56,10 +57,6 @@ class Player(object):
         # Move is not blocked by a wall
         if self.blocked(self.x, self.y, x, y, board):
             return False
-        # print x
-        # print y
-        # print self.x
-        # print self.y
         return True
 
     def occupied(self,x,y,b):
@@ -220,11 +217,20 @@ class State:
             self.players = [Player(0), Player(1)]
         self.walls = []
         self.tiles = [ [],[],[],[],[],[],[],[],[] ]
+        self.current = 0
+        # self.current = random.randint(0,1)
         
         for i in range(0,8):
             for j in range(0,8):
                 self.tiles[i].append(Tile(i,j))
 
-    def print_board(self):
+    def printBoard(self):
         """ Display information about the board """
         print self.tiles
+
+    def nextTurn(self):
+        if self.current == 0:
+            self.current = 1
+        else:
+            self.current = 0
+
