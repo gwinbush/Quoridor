@@ -99,11 +99,13 @@ class Minimax(AI):
 
 		for m in possible_moves:
 			node = Node(self.player_num, state, "move", None, m.x, m.y)
-			moves[node] = self.miniMax(node, 0, True)
+			# moves[node] = self.miniMax(node, 0, True)
+			moves[node] = self.alphabeta(node, 0, minint, maxint, True)
 		for w in possible_walls:
 			node = Node(self.player_num, state, "wall", w)
-			moves[node] = self.miniMax(node, 0, True)
-		
+			# moves[node] = self.miniMax(node, 0, True)
+			moves[node] = self.alphabeta(node, 0, minint, maxint, True)
+
 		move = max(moves, key=moves.get)
 
 		if move.move_type == "move":
@@ -131,6 +133,33 @@ class Minimax(AI):
 			for child in children:
 				v = miniMax(child, depth-1, True)
 				bestValue = min(bestValue, v)
+			return bestValue
+
+
+	def alphabeta(self, node, depth, alpha, beta, maximizingPlayer):
+		if depth == 0 or self.winningMove(node):
+			return self.heuristic(node, node.state)
+
+		if maximizingPlayer:
+			bestValue = minint
+			bestMove = None
+			children = node.children(maximizingPlayer)
+			for child in children:
+				v = self.alphabeta(child, depth-1, alpha, beta, False)
+				bestValue = max(bestValue, v)
+				alpha = max(alpha, bestValue)
+				if beta <= alpha:
+						break
+			return bestValue
+
+		else:
+			bestValue = maxint
+			children = node.children(maximizingPlayer)
+			for child in children:
+				v = alphabeta(child, depth-1, alpha, beta, True)
+				bestValue = min(bestValue, v)
+				if beta <= alpha:
+					break
 			return bestValue
 
 
