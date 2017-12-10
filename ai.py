@@ -9,16 +9,6 @@ minint = -maxint -1
 class AI(Player):
 	def __init__(self, num):
 		super(AI, self).__init__(num)
-		self.wall_options = []
-		for i in range(8):
-			for j in range(8):
-				for k in ["horizontal", "vertical"]:
-					top_l = Tile(i,j)
-					top_r = Tile(i+1,j)
-					bot_l = Tile(i,j+1)
-					bot_r = Tile(i+1,j+1)
-					wall = Wall(top_l, top_r, bot_l, bot_r, k)
-					self.wall_options.append(wall)
 		if self.player_num == 1:
 			self.win_row = [(0,0),(1,0),(2,0),(3,0),(4,0),(5,0),(6,0),(7,0),(8,0)]
 			self.opp_row = [(0,8),(1,8),(2,8),(3,8),(4,8),(5,8),(6,8),(7,8),(8,8)]
@@ -27,45 +17,6 @@ class AI(Player):
 			self.opp_row = [(0,0),(1,0),(2,0),(3,0),(4,0),(5,0),(6,0),(7,0),(8,0)]
 			self.win_row = [(0,8),(1,8),(2,8),(3,8),(4,8),(5,8),(6,8),(7,8),(8,8)]
 			self.opp = 1
-
-	def possibleMoves(self, state, opponent=False):
-		moves = []
-		if not opponent:
-			moves.append(Tile(self.x, self.y-1))
-			moves.append(Tile(self.x, self.y+1))
-			moves.append(Tile(self.x+1, self.y))
-			moves.append(Tile(self.x-1, self.y))
-			result = []
-			for m in moves:
-				if self.legal_move(m.x, m.y, state):
-					result.append(m)
-		else:
-			opp = state.players[self.opp]
-			moves.append(Tile(opp.x, opp.y-1))
-			moves.append(Tile(opp.x, opp.y+1))
-			moves.append(Tile(opp.x+1, opp.y))
-			moves.append(Tile(opp.x-1, opp.y))
-			result = []
-			for m in moves:
-				if opp.legal_move(m.x, m.y, state):
-					result.append(m)
-		
-		return result
-
-	def possibleWalls(self, state, opponent=False):
-		walls = []
-		if not opponent:
-			for wall in self.wall_options:
-				if self.legal_placement(state, wall):
-					walls.append(wall)
-		else:
-			opp = state.players[self.opp]
-			for wall in self.wall_options:
-				if opp.legal_placement(state, wall):
-					walls.append(wall)
-
-		return walls
-
 
 # Baseline AI finds all possible and randomly selects one
 # We give it a higher probability of moving the pawn rather than placing a wall
@@ -147,18 +98,17 @@ class Minimax(AI):
 		possible_moves = self.possibleMoves(state)
 
 		for m in possible_moves:
-			node = Node(self, state, "move", None, m.x, m.y)
-			moves[node] = self.miniMax(node, 1, True)
+			node = Node(self.player_num, state, "move", None, m.x, m.y)
+			moves[node] = self.miniMax(node, 0, True)
 		for w in possible_walls:
-			node = Node(self, state, "wall", w)
-			moves[node] = self.miniMax(node, 1, True)
+			node = Node(self.player_num, state, "wall", w)
+			moves[node] = self.miniMax(node, 0, True)
 		
 		move = max(moves, key=moves.get)
 
 		if move.move_type == "move":
 			self.move(move.moveX, move.moveY, state)
 		else:
-			move.wall.print_wall()
 			self.place_wall(state, move.wall)
 			
 
@@ -169,7 +119,7 @@ class Minimax(AI):
 		if maximizingPlayer:
 			bestValue = minint
 			bestMove = None
-			children = node.children()
+			children = node.children(maximizingPlayer)
 			for child in children:
 				v = self.miniMax(child, depth-1, False)
 				bestValue = max(bestValue, v)
@@ -177,7 +127,7 @@ class Minimax(AI):
 
 		else:
 			bestValue = maxint
-			children = node.children()
+			children = node.children(maximizingPlayer)
 			for child in children:
 				v = miniMax(child, depth-1, True)
 				bestValue = min(bestValue, v)
@@ -206,33 +156,33 @@ class Minimax(AI):
 
 class Node():
 	#player in state makes move_type with wall or (moveX,moveY)
-	def __init__(self, player, state, move_type, wall=None, moveX=None, moveY=None):
+	def __init__(self, player_num, state, move_type, wall=None, moveX=None, moveY=None):
 		self.move_type = move_type
 		self.wall = wall
 		self.moveX = moveX
 		self.moveY = moveY
-		self.player = player
-		self.state = state
-		self.opp = self.state.players[player.opp]
-
-	def children(self):
-		children = []
-		new_state = copy.deepcopy(self.state)
+		self.player_num = player_num
+		new_state = copy.deepcopy(state)
 		if self.move_type == "move":
-			new_state.players[self.player.player_num].x = self.moveX
-			new_state.players[self.player.player_num].y = self.moveY
+			new_state.players[self.player_num].x = self.moveX
+			new_state.players[self.player_num].y = self.moveY
 		else:
-			self.player.place_wall(new_state, self.wall)
+			new_state.players[self.player_num].place_wall(new_state, self.wall)
+		
+		self.state = new_state
+		self.opp_num = new_state.players[self.player_num].opp
 
-		opponent_possible_moves = self.player.possibleMoves(new_state, True)
-		opponent_possible_walls = self.player.possibleWalls(new_state, True)
+	def children(self, maximizingPlayer):
+		children = []
+		opponent_possible_moves = self.state.players[self.opp_num].possibleMoves(self.state, True)
+		opponent_possible_walls = self.state.players[self.player_num].possibleWalls(self.state, True)
 		for m in opponent_possible_moves:
-			node = Node(self.opp, new_state, "move", None, m.x, m.y)
+			node = Node(self.opp_num, self.state, "move", None, m.x, m.y)
 			children.append(node)
 		for w in opponent_possible_walls:
-			children.append(Node(self.opp, new_state, "wall", w))
+			children.append(Node(self.opp_num, self.state, "wall", w))
 		return children
-		
+
 # Static Methods
 def minPathLen(x, y, win_row, state):
 	minPath = maxint

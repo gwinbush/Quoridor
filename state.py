@@ -12,9 +12,22 @@ class Player(object):
         if (player_num == 0):
             self.x = 4
             self.y = 0
+            self.opp = 1
         elif (player_num == 1):
             self.x = 4
             self.y = 8
+            self.opp = 0
+
+        self.wall_options = []
+        for i in range(8):
+            for j in range(8):
+                for k in ["horizontal", "vertical"]:
+                    top_l = Tile(i,j)
+                    top_r = Tile(i+1,j)
+                    bot_l = Tile(i,j+1)
+                    bot_r = Tile(i+1,j+1)
+                    wall = Wall(top_l, top_r, bot_l, bot_r, k)
+                    self.wall_options.append(wall)
 
     def move(self, x, y, board):
         """ Try to move pawn to (x,y). Update the board if successful. Raise exception otherwise. """
@@ -33,8 +46,8 @@ class Player(object):
         if self.legal_placement(board, wall):
             self.walls -= 1
             board.walls.append(wall)
-            for wall in board.walls:
-                wall.print_wall()
+            # for wall in board.walls:
+            #     # wall.print_wall()
         else:
             raise ("Illegal wall placement")
 
@@ -165,13 +178,72 @@ class Player(object):
         win_row2 = [(0,0),(1,0),(2,0),(3,0),(4,0),(5,0),(6,0),(7,0),(8,0)]
 
         for tile in win_row1:
-            if bfs((b.players[0].x,b.players[0].y), tile, new_b):
+            if bfs((b.players[0].x,b.players[0].y), tile, b):
                 p1_path = True
         for tile in win_row2:
-            if bfs((b.players[1].x,b.players[1].y), tile, new_b):
+            if bfs((b.players[1].x,b.players[1].y), tile, b):
                 p2_path = True
         b.walls = b.walls[:-1]
         return (p1_path and p2_path)
+
+    def possibleMoves(self, state, opponent=False):
+        moves = []
+        if not opponent:
+            moves.append(Tile(self.x, self.y-1))
+            moves.append(Tile(self.x, self.y+1))
+            moves.append(Tile(self.x+1, self.y))
+            moves.append(Tile(self.x-1, self.y))
+
+            moves.append(Tile(self.x, self.y-2))
+            moves.append(Tile(self.x, self.y+2))
+            moves.append(Tile(self.x-2, self.y))
+            moves.append(Tile(self.x+2, self.y))
+            moves.append(Tile(self.x-1, self.y-1))
+            moves.append(Tile(self.x+1, self.y+1))
+            moves.append(Tile(self.x+1, self.y-1))
+            moves.append(Tile(self.x-1, self.y+1))
+
+            result = []
+            for m in moves:
+                if self.legal_move(m.x, m.y, state):
+                    result.append(m)
+        else:
+            opp = state.players[self.opp]
+            moves.append(Tile(opp.x, opp.y-1))
+            moves.append(Tile(opp.x, opp.y+1))
+            moves.append(Tile(opp.x+1, opp.y))
+            moves.append(Tile(opp.x-1, opp.y))
+
+            moves.append(Tile(opp.x, opp.y-2))
+            moves.append(Tile(opp.x, opp.y+2))
+            moves.append(Tile(opp.x-2, opp.y))
+            moves.append(Tile(opp.x+2, opp.y))
+            moves.append(Tile(opp.x-1, opp.y-1))
+            moves.append(Tile(opp.x+1, opp.y+1))
+            moves.append(Tile(opp.x+1, opp.y-1))
+            moves.append(Tile(opp.x-1, opp.y+1))
+
+            result = []
+            for m in moves:
+                if opp.legal_move(m.x, m.y, state):
+                    result.append(m)
+        
+        return result
+
+    def possibleWalls(self, state, opponent=False):
+        walls = []
+        if not opponent:
+            for wall in self.wall_options:
+                if self.legal_placement(state, wall):
+                    walls.append(wall)
+        else:
+            opp = state.players[self.opp]
+            for wall in self.wall_options:
+                if opp.legal_placement(state, wall):
+                    walls.append(wall)
+
+        return walls
+
 
     def print_player(self):
         """ Display information about the player. """
