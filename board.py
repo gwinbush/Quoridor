@@ -106,7 +106,8 @@ class Board():
 
 		x = self.width - CONTROL_WIDTH/2 - BORDER/2
 		y = self.height - 125
-		self.photo = Tkinter.PhotoImage(file="logo.gif")
+		self.photo = Tkinter.PhotoImage(file="quoridor.gif")
+		self.photo.subsample(2, 2) 
 		self.canvas.create_image((x,y), image=self.photo)
 
 	def drawWallCount(self):
@@ -254,7 +255,10 @@ class Board():
 					self.state.players[self.turn].place_wall(self.state, wallStrToState(wall_string))
 					self.nextTurn()
 					self.refresh()
-			self.handleWinner()
+			
+			if self.handleWinner():
+				return
+
 			if self.turn == 1 and self.ai_count == '1':
 				self.state.players[self.turn].finalMove(self.state)
 				self.nextTurn()
@@ -274,8 +278,7 @@ class Board():
 		if winner:
 			self.root.unbind("<Motion>")
 			self.root.unbind("<Button-1>")
-
-
+		return winner
 
 	def refresh(self):
 		self.clearShadow()

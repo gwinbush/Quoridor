@@ -158,8 +158,7 @@ class Player(object):
     def path_exists(self, b, w):
         """ Return True if both players have a path to their winning tiles and False otherwise. """
 
-        new_b = copy.deepcopy(b)
-        new_b.walls.append(w)
+        b.walls = b.walls + [w]
         p1_path = False
         p2_path = False
         win_row1 = [(0,8),(1,8),(2,8),(3,8),(4,8),(5,8),(6,8),(7,8),(8,8)]
@@ -171,7 +170,7 @@ class Player(object):
         for tile in win_row2:
             if bfs((b.players[1].x,b.players[1].y), tile, new_b):
                 p2_path = True
-
+        b.walls = b.walls[:-1]
         return (p1_path and p2_path)
 
     def print_player(self):
@@ -210,9 +209,9 @@ class State:
     def __init__(self, ai_count='0'):
         import ai
         if  ai_count == '1':
-            self.players =[Player(0), ai.Roger(1)]
+            self.players =[Player(0), ai.Minimax(1)]
         elif ai_count == '2':
-            self.players =[ai.Roger(0), ai.Roger(1)]
+            self.players =[ai.Heuristic(0), ai.Minimax(1)]
         else:
             self.players = [Player(0), Player(1)]
         self.walls = []
