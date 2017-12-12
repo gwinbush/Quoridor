@@ -283,7 +283,7 @@ class State:
         if  ai_count == '1':
             self.players =[Player(0), ai.Minimax(1)]
         elif ai_count == '2':
-            self.players =[ai.Heuristic(0), ai.Minimax(1)]
+            self.players =[ai.Minimax(0), ai.Minimax(1)]
         else:
             self.players = [Player(0), Player(1)]
         self.walls = []

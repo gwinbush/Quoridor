@@ -49,7 +49,10 @@ class Heuristic(AI):
 
 	def finalMove(self, state):
 		opp = state.players[self.opp]
+		
 		minOppPath = minPathLen(opp.x, opp.y, self.opp_row, state)
+		minMovePath = minPathLen(self.x, self.y, self.win_row, state)
+		# print str(minOppPath) + ' , ' + str(minMovePath)
 
 		min_diff = maxint
 		minPath = maxint
@@ -82,11 +85,16 @@ class Heuristic(AI):
 					min_wall = w
 				state.walls = state.walls[:-1]
 
-		if min_wall == None:
+		if min_wall == None and minMove == None:
+			self.finalMove(state)
+		elif min_wall == None:
 			self.move(minMove.x, minMove.y, state)
 		else:
 			self.place_wall(state, min_wall)
-	
+
+		minOppPath = minPathLen(opp.x, opp.y, self.opp_row, state)
+		minMovePath = minPathLen(self.x, self.y, self.win_row, state)
+		# print str(minOppPath) + ' , ' + str(minMovePath)
 
 class Minimax(AI):
 	def __init__(self, num):
