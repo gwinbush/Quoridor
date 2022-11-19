@@ -1,6 +1,7 @@
-from state import *
-from search import *
 from Queue import *
+
+from search import *
+from state import *
 
 # b = Board()
 # p1 = Player(1)

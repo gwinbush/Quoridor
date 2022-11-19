@@ -1,8 +1,9 @@
-from state import *
-import search
-import random
 import copy
+import random
 from sys import maxint
+
+import search
+from state import *
 
 minint = -maxint - 1
 
@@ -94,7 +95,6 @@ class Heuristic(AI):
 
         minOppPath = minPathLen(opp.x, opp.y, self.opp_row, state)
         minMovePath = minPathLen(self.x, self.y, self.win_row, state)
-        # print str(minOppPath) + ' , ' + str(minMovePath)
 
         min_diff = maxint
         minPath = maxint
@@ -136,7 +136,6 @@ class Heuristic(AI):
 
         minOppPath = minPathLen(opp.x, opp.y, self.opp_row, state)
         minMovePath = minPathLen(self.x, self.y, self.win_row, state)
-        # print str(minOppPath) + ' , ' + str(minMovePath)
 
 
 class Minimax(AI):

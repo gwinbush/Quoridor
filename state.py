@@ -1,6 +1,5 @@
 from search import *
-import copy 
-import random
+
 
 class Player(object):
 

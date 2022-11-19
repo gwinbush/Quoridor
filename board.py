@@ -1,11 +1,10 @@
-from state import *
-from sys import argv
-import Tkinter
 import math
 import time
-import threading
-import random
-import time
+from sys import argv
+
+import Tkinter
+
+from state import *
 
 TILE_SIZE = 50
 PLAYER_SIZE = int(0.8 * TILE_SIZE)

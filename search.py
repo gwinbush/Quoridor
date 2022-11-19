@@ -1,5 +1,6 @@
-import state
 from sys import maxint
+
+import state
 
 
 def aStarLength(start, end, state):
